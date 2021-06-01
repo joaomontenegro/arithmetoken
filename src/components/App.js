@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Web3 from 'web3'
 import Token from '../abis/Token.json'
+import MathContract from '../abis/MathContract.json'
 import './App.css';
 import logo from './logo512.png';
 import { render } from 'react-dom';
@@ -14,7 +15,8 @@ class App extends Component {
       account: '0x0',
       balance: 0,
       tokenContract : {},
-      tokenBalance : 0
+      tokenBalance : 0,
+      mathContract : {}
     }
   }
 
@@ -38,15 +40,18 @@ class App extends Component {
 
   render() {
     let content
-    content = <div>
-        <p>ETH Balance: <b>{ this.state.balance }</b> eth </p>
-        <p> ArithmeToken Balance: <b>{ this.state.tokenBalance }</b> </p>
-      </div>
+
+    if(this.state.loading) {
+      content = <p id="loader" className="text-center">Loading...</p>
+    } else {
+      content = <div>
+          <p>ETH Balance: <b>{ this.state.balance }</b> eth </p>
+          <p> ArithmeToken Balance: <b>{ this.state.tokenBalance }</b> </p>
+        </div>
+    }
 
     return (
       <div className="App">
-        <img src={logo} className="App-logo" alt="logo" />
-
         <header className="App-header">
           ArithmeToken
         </header>
@@ -89,11 +94,19 @@ class App extends Component {
     } else {
       window.alert('Token contract not deployed to detected network.')
     }
+
+    // Load the Math contract
+    const mathData = MathContract.networks[networkId]
+    if(mathData) {
+      const mathContract = new web3.eth.Contract(MathContract.abi, mathData.address)
+      this.setState({ mathContract })
+    } else {
+      window.alert('MathContract contract not deployed to detected network.')
+    }
   }
 
   mintNumber = (uri, number) => {
     this.setState({ loading: true })
-    console.log("ACCT:" + this.state.account + " " + uri + " " + number)
     this.state.tokenContract.methods.mintNumber(this.state.account, uri, number)
       .send({ from: this.state.account })
         .on('transactionHash', (hash) => { 
