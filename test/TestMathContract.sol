@@ -3,13 +3,13 @@ pragma solidity ^0.8.0;
 
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
-import "../contracts/MathContract.sol";
-import "../contracts/MathToken.sol";
+import "../src/contracts/MathContract.sol";
+import "../src/contracts/Token.sol";
 
 contract TestMathContract {
 
     function testCalculateNumber() public {
-        MathToken numToken = MathToken(DeployedAddresses.MathToken());
+        Token numToken = Token(DeployedAddresses.Token());
         uint256 tokenId = numToken.mintNumber(tx.origin, "http://123.json", 123);
         uint256[] memory tokenIds = new uint256[](1);
         tokenIds[0] = tokenId;
@@ -20,11 +20,11 @@ contract TestMathContract {
     }
 
     function testCalculateAdd() public {
-        MathToken numToken = MathToken(DeployedAddresses.MathToken());
+        Token numToken = Token(DeployedAddresses.Token());
         
         uint256 tokenId1 = numToken.mintNumber(tx.origin, "http://1.json", 1);
         uint256 tokenId2 = numToken.mintNumber(tx.origin, "http://2.json", 2);
-        uint256 tokenIdAdd = numToken.mintOperation(tx.origin, "http://add.json", MathToken.Operation.Add);
+        uint256 tokenIdAdd = numToken.mintOperation(tx.origin, "http://add.json", Token.Operation.Add);
         
         uint256[] memory tokenIds = new uint256[](3);
         tokenIds[0] = tokenId1;
@@ -37,11 +37,11 @@ contract TestMathContract {
     }
 
     function testCalculateSub() public {
-        MathToken numToken = MathToken(DeployedAddresses.MathToken());
+        Token numToken = Token(DeployedAddresses.Token());
         
         uint256 tokenId7 = numToken.mintNumber(tx.origin, "http://7.json", 7);
         uint256 tokenId5 = numToken.mintNumber(tx.origin, "http://5.json", 5);
-        uint256 tokenIdSub = numToken.mintOperation(tx.origin, "http://sub.json", MathToken.Operation.Sub);
+        uint256 tokenIdSub = numToken.mintOperation(tx.origin, "http://sub.json", Token.Operation.Sub);
         
         uint256[] memory tokenIds = new uint256[](3);
         tokenIds[0] = tokenId7;
@@ -54,11 +54,11 @@ contract TestMathContract {
     }
 
     function testCalculateMul() public {
-        MathToken numToken = MathToken(DeployedAddresses.MathToken());
+        Token numToken = Token(DeployedAddresses.Token());
         
         uint256 tokenId3 = numToken.mintNumber(tx.origin, "http://3.json", 3);
         uint256 tokenId4 = numToken.mintNumber(tx.origin, "http://4.json", 4);
-        uint256 tokenIdMul = numToken.mintOperation(tx.origin, "http://mul.json", MathToken.Operation.Mul);
+        uint256 tokenIdMul = numToken.mintOperation(tx.origin, "http://mul.json", Token.Operation.Mul);
         
         uint256[] memory tokenIds = new uint256[](3);
         tokenIds[0] = tokenId3;
@@ -72,11 +72,11 @@ contract TestMathContract {
 
 
     function testCalculateDiv() public {
-        MathToken numToken = MathToken(DeployedAddresses.MathToken());
+        Token numToken = Token(DeployedAddresses.Token());
         
         uint256 tokenId6 = numToken.mintNumber(tx.origin, "http://6.json", 6);
         uint256 tokenId3 = numToken.mintNumber(tx.origin, "http://3.json", 3);
-        uint256 tokenIdDiv = numToken.mintOperation(tx.origin, "http://div.json", MathToken.Operation.Div);
+        uint256 tokenIdDiv = numToken.mintOperation(tx.origin, "http://div.json", Token.Operation.Div);
         
         uint256[] memory tokenIds = new uint256[](3);
         tokenIds[0] = tokenId6;
@@ -89,14 +89,14 @@ contract TestMathContract {
     }
 
     function testCalculatePrecedence() public {
-        MathToken numToken = MathToken(DeployedAddresses.MathToken());
+        Token numToken = Token(DeployedAddresses.Token());
         
         uint256 tokenId1 = numToken.mintNumber(tx.origin, "http://1.json", 1);
         uint256 tokenId2 = numToken.mintNumber(tx.origin, "http://2.json", 2);
         uint256 tokenId3 = numToken.mintNumber(tx.origin, "http://3.json", 3);
         uint256 tokenId4 = numToken.mintNumber(tx.origin, "http://4.json", 4);
-        uint256 tokenIdAdd = numToken.mintOperation(tx.origin, "http://add.json", MathToken.Operation.Add);
-        uint256 tokenIdMul = numToken.mintOperation(tx.origin, "http://mul.json", MathToken.Operation.Mul);
+        uint256 tokenIdAdd = numToken.mintOperation(tx.origin, "http://add.json", Token.Operation.Add);
+        uint256 tokenIdMul = numToken.mintOperation(tx.origin, "http://mul.json", Token.Operation.Mul);
         
         uint256[] memory tokenIds = new uint256[](7);
         tokenIds[0] = tokenId1;
@@ -114,11 +114,11 @@ contract TestMathContract {
 
     //TODO: detect errors in code?
     function testCalculateInvalid() public {
-        MathToken numToken = MathToken(DeployedAddresses.MathToken());
+        Token numToken = Token(DeployedAddresses.Token());
         
         uint256 tokenId1 = numToken.mintNumber(tx.origin, "http://1.json", 1);
-        uint256 tokenIdAdd = numToken.mintOperation(tx.origin, "http://add.json", MathToken.Operation.Add);
-        uint256 tokenIdMul = numToken.mintOperation(tx.origin, "http://mul.json", MathToken.Operation.Mul);
+        uint256 tokenIdAdd = numToken.mintOperation(tx.origin, "http://add.json", Token.Operation.Add);
+        uint256 tokenIdMul = numToken.mintOperation(tx.origin, "http://mul.json", Token.Operation.Mul);
         
         uint256[] memory tokenIds = new uint256[](3);
         tokenIds[0] = tokenId1;

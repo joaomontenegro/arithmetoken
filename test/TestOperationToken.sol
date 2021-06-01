@@ -3,36 +3,36 @@ pragma solidity ^0.8.0;
 
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
-import "../contracts/MathToken.sol";
+import "../src/contracts/Token.sol";
 
 contract TestOperationToken {
 
   function testInitialBalanceUsingDeployedContract() public {
-    MathToken opToken = MathToken(DeployedAddresses.MathToken());
+    Token opToken = Token(DeployedAddresses.Token());
 
-    Assert.equal(opToken.balanceOf(tx.origin), 0, "Owner should have 0 MathToken initially");
+    Assert.equal(opToken.balanceOf(tx.origin), 0, "Owner should have 0 Token initially");
   }
 
   function testInitialBalanceWithNewOperationToken() public {
-    MathToken opToken = new MathToken();
+    Token opToken = new Token();
 
-    Assert.equal(opToken.balanceOf(tx.origin), 0, "Owner should have 0 MathToken initially");
+    Assert.equal(opToken.balanceOf(tx.origin), 0, "Owner should have 0 Token initially");
   }
   
   function testMintOperation() public {
-    MathToken opToken = new MathToken();
-    uint256 tokenId = opToken.mintOperation(tx.origin, "http://add.json", MathToken.Operation.Add);
+    Token opToken = new Token();
+    uint256 tokenId = opToken.mintOperation(tx.origin, "http://add.json", Token.Operation.Add);
 
-    Assert.equal(opToken.balanceOf(tx.origin), 1, "Owner should have 1 MathToken after calling mint()");
-    Assert.isTrue(opToken.getOperation(tokenId) == MathToken.Operation.Add, "Expected operation should be Add.");
+    Assert.equal(opToken.balanceOf(tx.origin), 1, "Owner should have 1 Token after calling mint()");
+    Assert.isTrue(opToken.getOperation(tokenId) == Token.Operation.Add, "Expected operation should be Add.");
   }
 
   function testCalculate() public {
-    MathToken opToken = new MathToken();
-    uint256 addId = opToken.mintOperation(tx.origin, "http://add.json", MathToken.Operation.Add);
-    uint256 subId = opToken.mintOperation(tx.origin, "http://sub.json", MathToken.Operation.Sub);
-    uint256 mulId = opToken.mintOperation(tx.origin, "http://mul.json", MathToken.Operation.Mul);
-    uint256 divId = opToken.mintOperation(tx.origin, "http://dic.json", MathToken.Operation.Div);
+    Token opToken = new Token();
+    uint256 addId = opToken.mintOperation(tx.origin, "http://add.json", Token.Operation.Add);
+    uint256 subId = opToken.mintOperation(tx.origin, "http://sub.json", Token.Operation.Sub);
+    uint256 mulId = opToken.mintOperation(tx.origin, "http://mul.json", Token.Operation.Mul);
+    uint256 divId = opToken.mintOperation(tx.origin, "http://dic.json", Token.Operation.Div);
 
     int64 a = 15;
     int64 b = 5;

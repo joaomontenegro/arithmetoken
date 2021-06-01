@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract MathToken is ERC721URIStorage {
+contract Token is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -16,7 +16,7 @@ contract MathToken is ERC721URIStorage {
     
     mapping (uint256 => int64) private _numbers;
 
-    constructor() ERC721("MathToken", "MATH") {}
+    constructor() ERC721("ArithmeToken", "ARI") {}
 
     function _mint(address acct, string memory uri) internal returns (uint256)
     {
@@ -30,19 +30,19 @@ contract MathToken is ERC721URIStorage {
     }
 
     function getType(uint256 tokenId) public view returns (Type) {
-        require(_exists(tokenId), "MathToken: getting type of nonexistent token");
+        require(_exists(tokenId), "Token: getting type of nonexistent token");
         return _types[tokenId];
     }
 
     function getNumber(uint256 tokenId) public view returns (int64) {
-        require(_exists(tokenId), "MathToken: getting type of nonexistent token");
-        require(getType(tokenId) == Type.Number, "MathToken: getting number from Operation token");
+        require(_exists(tokenId), "Token: getting type of nonexistent token");
+        require(getType(tokenId) == Type.Number, "Token: getting number from Operation token");
         return _numbers[tokenId];
     }
 
     function getOperation(uint256 tokenId) public view returns (Operation) {
-        require(_exists(tokenId), "MathToken: getting type of nonexistent token");
-        require(getType(tokenId) == Type.Operation, "MathToken: getting operation from Number token");
+        require(_exists(tokenId), "Token: getting type of nonexistent token");
+        require(getType(tokenId) == Type.Operation, "Token: getting operation from Number token");
         return _operations[tokenId];
     }
 
@@ -61,8 +61,8 @@ contract MathToken is ERC721URIStorage {
     }
 
     function runOperation(uint256 tokenId, int64 v1, int64 v2) public view returns (int64) {
-        require(_exists(tokenId), "MathToken: calculating using a nonexistent token");
-        require(getType(tokenId) == Type.Operation, "MathToken: calculating using a Number token");
+        require(_exists(tokenId), "Token: calculating using a nonexistent token");
+        require(getType(tokenId) == Type.Operation, "Token: calculating using a Number token");
 
         return runOperation(getOperation(tokenId), v1, v2);
     }

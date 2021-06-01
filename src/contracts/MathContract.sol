@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./MathToken.sol";
+import "./Token.sol";
 
 struct NumStack {
     int64[] nums;
@@ -46,37 +46,37 @@ function NumStackLen(NumStack memory stack) pure returns (uint256)
 }
 
 struct OpStack {
-    MathToken.Operation[] ops;
+    Token.Operation[] ops;
     uint256 head;
 }
 
 function OpStackInit(OpStack memory stack, uint256 len) pure
 {
-    stack.ops = new MathToken.Operation[](len);
+    stack.ops = new Token.Operation[](len);
     stack.head = 0;
 }
 
-function OpStackPush(OpStack memory stack, MathToken.Operation op) pure
+function OpStackPush(OpStack memory stack, Token.Operation op) pure
 {
     //TODO: test size?
     stack.ops[stack.head] = op;
     stack.head++;
 }
 
-function OpStackPop(OpStack memory stack) pure returns (MathToken.Operation)
+function OpStackPop(OpStack memory stack) pure returns (Token.Operation)
 {
     //TODO: test if len is zero
     stack.head--;
     return stack.ops[stack.head];
 }
 
-function OpStackHead(OpStack memory stack) pure returns (MathToken.Operation)
+function OpStackHead(OpStack memory stack) pure returns (Token.Operation)
 {
     //TODO: test if len is zero
     return stack.ops[stack.head - 1];
 }
 
-function OpStackTail(OpStack memory stack) pure returns (MathToken.Operation)
+function OpStackTail(OpStack memory stack) pure returns (Token.Operation)
 {
     //TODO: test if len is zero
     return stack.ops[0];
@@ -88,9 +88,9 @@ function OpStackLen(OpStack memory stack) pure returns (uint256)
 }
 
 contract MathContract {
-    MathToken private token;
+    Token private token;
 
-    constructor(MathToken _token) {
+    constructor(Token _token) {
         token = _token;
     }
 
@@ -106,14 +106,14 @@ contract MathContract {
         for (uint i=0; i < tokens.length; i++) {
             uint256 tokenId = tokens[i];
 
-            if (token.getType(tokenId) == MathToken.Type.Number) {
+            if (token.getType(tokenId) == Token.Type.Number) {
                 // Add to the operand stack
                 NumStackPush(numStack, token.getNumber(tokenId));
             } else {
-                MathToken.Operation op = token.getOperation(tokenId);
+                Token.Operation op = token.getOperation(tokenId);
 
                 if (OpStackLen(opStack) >  0) {
-                    MathToken.Operation topOp = OpStackHead(opStack);
+                    Token.Operation topOp = OpStackHead(opStack);
 
                     if (op <= topOp) {
                         _runTopOp(numStack, opStack);
@@ -135,7 +135,7 @@ contract MathContract {
 
     function _runTopOp(NumStack memory numStack, OpStack memory opStack) internal view
     {
-        MathToken.Operation op = OpStackPop(opStack);
+        Token.Operation op = OpStackPop(opStack);
 
         int64 v2 = NumStackPop(numStack);
         int64 v1 = NumStackPop(numStack);
