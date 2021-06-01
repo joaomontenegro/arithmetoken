@@ -35,15 +35,33 @@ contract Token is ERC721URIStorage {
     }
 
     function getNumber(uint256 tokenId) public view returns (int64) {
-        require(_exists(tokenId), "Token: getting type of nonexistent token");
+        require(_exists(tokenId), "Token: getting number of nonexistent token");
         require(getType(tokenId) == Type.Number, "Token: getting number from Operation token");
         return _numbers[tokenId];
     }
 
     function getOperation(uint256 tokenId) public view returns (Operation) {
-        require(_exists(tokenId), "Token: getting type of nonexistent token");
+        require(_exists(tokenId), "Token: getting op of nonexistent token");
         require(getType(tokenId) == Type.Operation, "Token: getting operation from Number token");
         return _operations[tokenId];
+    }
+
+    function getOperationText(uint256 tokenId) public view returns (string memory) {
+        require(_exists(tokenId), "Token: getting text of nonexistent token");
+        require(getType(tokenId) == Type.Operation, "Token: getting text from Number token");
+        
+        Operation op = getOperation(tokenId);
+        if (op == Operation.Add) {
+            return "+";
+        } else if (op == Operation.Sub) {
+            return "-";
+        } else if (op == Operation.Mul) {
+            return "*";
+        } else if (op == Operation.Div) {
+            return "/";
+        }
+
+        return "";
     }
 
     function runOperation(Operation op, int64 v1, int64 v2) public pure returns (int64) {

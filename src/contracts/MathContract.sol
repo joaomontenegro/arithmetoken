@@ -129,7 +129,7 @@ contract MathContract {
             _runTopOp(numStack, opStack);
         }
 
-        //tODO: this is not working:
+        // Return the first number in the stack, which should be the result.
         return NumStackTail(numStack);
     }
 

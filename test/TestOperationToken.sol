@@ -25,6 +25,7 @@ contract TestOperationToken {
 
     Assert.equal(opToken.balanceOf(tx.origin), 1, "Owner should have 1 Token after calling mint()");
     Assert.isTrue(opToken.getOperation(tokenId) == Token.Operation.Add, "Expected operation should be Add.");
+    Assert.equal(opToken.getOperationText(tokenId), "+", "Expected operation text should be '+'.");
   }
 
   function testCalculate() public {
