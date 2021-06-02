@@ -2,9 +2,8 @@ import React, { Component } from 'react'
 import Web3 from 'web3'
 import Token from '../abis/Token.json'
 import MathContract from '../abis/MathContract.json'
+import TokenList from './TokenList';
 import './App.css';
-import logo from './logo512.png';
-import { render } from 'react-dom';
 
 class App extends Component {
 
@@ -13,9 +12,10 @@ class App extends Component {
     this.state = {
       loading: false,
       account: '0x0',
-      balance: 0,
+      ethBalance: 0,
       tokenContract : {},
       tokenBalance : 0,
+      tokensInAccount : [],
       mathContract : {}
     }
   }
@@ -45,8 +45,13 @@ class App extends Component {
       content = <p id="loader" className="text-center">Loading...</p>
     } else {
       content = <div>
-          <p>ETH Balance: <b>{ this.state.balance }</b> eth </p>
+          <p>Eth Account: <b>{ this.state.account }</b></p>
+          <p>Eth Balance: <b>{ this.state.ethBalance }</b> eth </p>
           <p> ArithmeToken Balance: <b>{ this.state.tokenBalance }</b> </p>
+          <TokenList
+            account={this.state.account}
+            tokensInAccount={this.state.tokensInAccount}
+          />
         </div>
     }
 
@@ -58,12 +63,14 @@ class App extends Component {
 
         { content }
 
-        <form onSubmit={(event) => {
-                console.log("MINTING!")
-                event.preventDefault()
-                this.mintNumber("http://123.json", 123)
-              }}>
-        <button type="submit">MINT!</button>
+        <form onSubmit={ (event) => {
+            event.preventDefault()
+            this.mintNumber( Math.floor(Math.random() * 100) )
+          }}>
+
+        <br></br>
+
+        <button type="submit">MINT a Number Token between 0 and 100!</button>
         </form>
         
       </div>
@@ -80,17 +87,30 @@ class App extends Component {
     const account = accounts[0]
     this.setState({ account: account })
 
-    // TODO eth balance
-    const balance = web3.utils.fromWei(await web3.eth.getBalance(account))
-    this.setState({ balance: balance })
+    // Eth balance
+    const ethBalance = web3.utils.fromWei(await web3.eth.getBalance(account))
+    this.setState({ ethBalance: ethBalance })
 
     // Load the Token contract
     const tokenData = Token.networks[networkId]
     if(tokenData) {
       const tokenContract = new web3.eth.Contract(Token.abi, tokenData.address)
       this.setState({ tokenContract })
-      let tokenBalance = await tokenContract.methods.balanceOf(this.state.account).call()
+      
+      let tokenBalance = await tokenContract.methods.balanceOf(account).call()
       this.setState({ tokenBalance: tokenBalance.toString() })
+
+      // Get the tokens in the account
+      const tokensInAccount = []
+      let tokenIds = await tokenContract.methods.getTokensInAddress(account).call()
+      for (const tokenId of tokenIds) {
+        const token = await this.getToken(tokenId)
+        tokensInAccount.push(token)
+      }
+
+      this.setState({ tokensInAccount: tokensInAccount })
+
+
     } else {
       window.alert('Token contract not deployed to detected network.')
     }
@@ -105,7 +125,22 @@ class App extends Component {
     }
   }
 
-  mintNumber = (uri, number) => {
+  async getToken(tokenId) {
+    const number = await this.state.tokenContract.methods.getNumber(tokenId).call()
+    const uri    = await this.state.tokenContract.methods.tokenURI(tokenId).call()
+    
+    const token = {
+      id:     tokenId,
+      number: number,
+      uri:    uri      
+    }
+
+    return token
+  }
+
+  // TODO just to test
+  mintNumber = (number) => {
+    const uri = "http://" + number + ".json"
     this.setState({ loading: true })
     this.state.tokenContract.methods.mintNumber(this.state.account, uri, number)
       .send({ from: this.state.account })
@@ -115,5 +150,6 @@ class App extends Component {
   }
 
 }
+
 
 export default App;
