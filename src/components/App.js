@@ -3,6 +3,9 @@ import Web3 from 'web3'
 import Token from '../abis/Token.json'
 import MathContract from '../abis/MathContract.json'
 import TokenList from './TokenList';
+import MintNumberToken from './MintNumberToken';
+import MintOpToken from './MintOpToken';
+import Expression from './Expression';
 import './App.css';
 
 class App extends Component {
@@ -39,40 +42,42 @@ class App extends Component {
   }
 
   render() {
-    let content
-
-    if(this.state.loading) {
-      content = <p id="loader" className="text-center">Loading...</p>
-    } else {
-      content = <div>
-          <p>Eth Account: <b>{ this.state.account }</b></p>
-          <p>Eth Balance: <b>{ this.state.ethBalance }</b> eth </p>
-          <p> ArithmeToken Balance: <b>{ this.state.tokenBalance }</b> </p>
-          <TokenList
-            account={this.state.account}
-            tokensInAccount={this.state.tokensInAccount}
-          />
-        </div>
-    }
-
     return (
       <div className="App">
         <header className="App-header">
           ArithmeToken
         </header>
 
-        { content }
+        <TokenList
+            account={this.state.account}
+            tokensInAccount={this.state.tokensInAccount}
+        />
 
-        <form onSubmit={ (event) => {
-            event.preventDefault()
-            this.mintNumber( Math.floor(Math.random() * 100) )
-          }}>
+        <hr></hr>
+
+        <Expression 
+          account={this.state.account}
+          tokenContract={this.state.tokenContract}
+          mathContract={this.state.mathContract}
+          tokensInAccount={this.state.tokensInAccount}
+        />
+
+        <hr></hr>
+        
+        <b> Cheating </b>
+
+        <MintOpToken
+          account={this.state.account}
+          tokenContract={this.state.tokenContract}
+        />
 
         <br></br>
 
-        <button type="submit">MINT a Number Token between 0 and 100!</button>
-        </form>
-        
+        <MintNumberToken
+          account={this.state.account}
+          tokenContract={this.state.tokenContract}
+        />
+
       </div>
     );
   }
@@ -126,28 +131,35 @@ class App extends Component {
   }
 
   async getToken(tokenId) {
-    const number = await this.state.tokenContract.methods.getNumber(tokenId).call()
-    const uri    = await this.state.tokenContract.methods.tokenURI(tokenId).call()
+    let value
+    let tokenType = parseInt(await this.state.tokenContract.methods.getType(tokenId).call())
+
+    if (tokenType === 0) {
+      tokenType = "Op"
+      const op = parseInt(await this.state.tokenContract.methods.getOperation(tokenId).call())
+            
+      if (op === 0) { value = "+"; }
+      else if (op === 1) { value = "-"; }
+      else if (op === 2) { value = "*"; }
+      else if (op === 3) { value = "/"; }
+      
+    } else {
+      tokenType = "Num"
+      value = await this.state.tokenContract.methods.getNumber(tokenId).call()
+    }
+
+    const uri = await this.state.tokenContract.methods.tokenURI(tokenId).call()
     
     const token = {
-      id:     tokenId,
-      number: number,
-      uri:    uri      
+      id:    tokenId,
+      type:  tokenType,
+      value: value,
+      uri:   uri 
     }
 
     return token
   }
 
-  // TODO just to test
-  mintNumber = (number) => {
-    const uri = "http://" + number + ".json"
-    this.setState({ loading: true })
-    this.state.tokenContract.methods.mintNumber(this.state.account, uri, number)
-      .send({ from: this.state.account })
-        .on('transactionHash', (hash) => { 
-          this.setState({ loading: false })
-        })
-  }
 
 }
 

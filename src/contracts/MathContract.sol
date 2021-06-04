@@ -94,6 +94,8 @@ contract MathContract {
         token = _token;
     }
 
+    // TODO: mint with the result of calculate
+
     function calculate(uint256[] memory tokens) public view returns (int64)
     {
         NumStack memory numStack;

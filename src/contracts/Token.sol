@@ -18,15 +18,30 @@ contract Token is ERC721URIStorage {
 
     constructor() ERC721("ArithmeToken", "ARI") {}
 
-    function _mint(address acct, string memory uri) internal returns (uint256)
+    function _mint(address addr, string memory uri) internal returns (uint256)
     {
         _tokenIds.increment();
 
         uint256 newTokenId = _tokenIds.current();
-        super._mint(acct, newTokenId);
+        super._mint(addr, newTokenId);
         _setTokenURI(newTokenId, uri);
 
         return newTokenId;
+    }
+
+    function getTokensInAddress(address addr) public view returns (uint256[] memory) {
+        uint256 balance = balanceOf(addr);
+        uint256[] memory tokenIds = new uint256[](balance);
+        uint256 found = 0;
+        
+        for (uint256 i=0; found < balance; i++) {
+            if (_exists(i) && ownerOf(i) == addr) {
+                tokenIds[found] = i;
+                found++;
+            }
+        }
+
+        return tokenIds;
     }
 
     function getType(uint256 tokenId) public view returns (Type) {

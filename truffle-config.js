@@ -24,8 +24,12 @@
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
+const dotenv = require('dotenv').config()
+const regeneratorRuntime = require("regenerator-runtime");
+
 var HDWalletProvider = require("@truffle/hdwallet-provider");
-var  metamaskMnemonic = "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat";
+var LedgerWalletProvider = require('truffle-ledger-provider');
+
 
 module.exports = {
   /**
@@ -40,7 +44,7 @@ module.exports = {
 
    networks: {
 
-    development: {
+    ganache: {
       host: "127.0.0.1",
       port: 7545,
       network_id: "*"
@@ -48,7 +52,21 @@ module.exports = {
 
     rinkeby: {
       provider: function() { 
-       return new HDWalletProvider(metamaskMnemonic, "https://rinkeby.infura.io/v3/ef0e5accf1ae493697f3ed53325b4c25");
+        const infuraAddress = `https://rinkeby.infura.io/v3/${process.env.INFURA_API_ID}`
+        
+        const ledgerOptions = {
+          networkId: 4, // rinkeby
+          path: "44'/60'/0'/2", //TODO: might not be needed 
+          askConfirm: false,
+          confirmations: 2,
+          accountsLength: 1,
+          accountsOffset: 0 //  tODO: change to the nth account derived by ledger
+        };        
+
+        return new LedgerWalletProvider(ledgerOptions, infuraAddress);
+
+        //var metamaskMnemonic = process.env.MNEMONIC
+        //return new HDWalletProvider(metamaskMnemonic, infuraAddress);
       },
       network_id: 4,
       gas: 4500000,
