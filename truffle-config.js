@@ -56,11 +56,11 @@ module.exports = {
         
         const ledgerOptions = {
           networkId: 4, // rinkeby
-          path: "44'/60'/0'/2", //TODO: might not be needed 
+          path: "44'/60'/0'/0",
           askConfirm: false,
           confirmations: 2,
           accountsLength: 1,
-          accountsOffset: 0 //  tODO: change to the nth account derived by ledger
+          accountsOffset: 2
         };        
 
         return new LedgerWalletProvider(ledgerOptions, infuraAddress);
@@ -71,6 +71,29 @@ module.exports = {
       network_id: 4,
       gas: 4500000,
       gasPrice: 10000000000,
+    },
+
+    mainnet: {
+      provider: function() { 
+        const infuraAddress = `https://mainnet.infura.io/v3/${process.env.INFURA_API_ID}`
+        
+        const ledgerOptions = {
+          networkId: 4, // rinkeby
+          path: "44'/60'/0'/0",
+          askConfirm: false,
+          confirmations: 2,
+          accountsLength: 1,
+          accountsOffset: 2
+        };        
+
+        return new LedgerWalletProvider(ledgerOptions, infuraAddress);
+
+        //var metamaskMnemonic = process.env.MNEMONIC
+        //return new HDWalletProvider(metamaskMnemonic, infuraAddress);
+      },
+      network_id: 1,
+      gas: 4500000,
+      gasPrice: 21000000000,
     }
 
     // Useful for testing. The `development` name is special - truffle uses it by default
