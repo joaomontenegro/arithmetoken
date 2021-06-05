@@ -21,13 +21,15 @@ class App extends Component {
       tokensInAccount : [],
       mathContract : {}
     }
+
+    this.handleMintedEvent = this.handleMintedEvent.bind(this)
   }
 
   async componentDidMount() {
     await this.loadWeb3()
     await this.loadBlockchainData()
   }
-
+  
   async loadWeb3() {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum)
@@ -105,17 +107,6 @@ class App extends Component {
       let tokenBalance = await tokenContract.methods.balanceOf(account).call()
       this.setState({ tokenBalance: tokenBalance.toString() })
 
-      // Get the tokens in the account
-      const tokensInAccount = []
-      let tokenIds = await tokenContract.methods.getTokensInAddress(account).call()
-      for (const tokenId of tokenIds) {
-        const token = await this.getToken(tokenId)
-        tokensInAccount.push(token)
-      }
-
-      this.setState({ tokensInAccount: tokensInAccount })
-
-
     } else {
       window.alert('Token contract not deployed to detected network.')
     }
@@ -127,6 +118,48 @@ class App extends Component {
       this.setState({ mathContract })
     } else {
       window.alert('MathContract contract not deployed to detected network.')
+    }
+
+    await this.updateTokensInAccount();
+
+    // Subscribe to events
+    // TODO
+    this.state.tokenContract.events.Minted(
+      { fromBlock: 'latest', filter: {addr: this.state.account} }, // show only events for this addr
+      this.handleMintedEvent)
+  }
+
+  async updateTokensInAccount() {
+
+    // todo
+    var t0 = window.performance.now()
+    
+    // Get the tokens in the account
+    const tokensInAccount = []
+    let tokenIds = await this.state.tokenContract.methods.getTokensInAddress(this.state.account).call()
+    
+    // todo
+    var t1 = window.performance.now()
+
+    for (const tokenId of tokenIds) {
+      const token = await this.getToken(tokenId)
+      tokensInAccount.push(token)
+    }
+
+    // todo
+    var t2 = window.performance.now()
+    
+    console.log(`TIME getTokensInAddress():  ${t1 - t0} ms`)
+    console.log(`TIME getToken() [several]:  ${t2 - t1} ms`)
+
+    this.setState({ tokensInAccount: tokensInAccount })
+  }
+
+  async handleMintedEvent (error, event) {
+    if (error) {
+      window.alert("error while subscribing to event")
+    } else {
+      await this.updateTokensInAccount();
     }
   }
 
@@ -160,8 +193,6 @@ class App extends Component {
     return token
   }
 
-
 }
-
 
 export default App;

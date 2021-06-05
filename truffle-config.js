@@ -60,7 +60,7 @@ module.exports = {
           askConfirm: false,
           confirmations: 2,
           accountsLength: 1,
-          accountsOffset: 2
+          accountsOffset: 2 //TODO: maybe specify this in the environment var?
         };        
 
         return new LedgerWalletProvider(ledgerOptions, infuraAddress);
@@ -78,7 +78,7 @@ module.exports = {
         const infuraAddress = `https://mainnet.infura.io/v3/${process.env.INFURA_API_ID}`
         
         const ledgerOptions = {
-          networkId: 4, // rinkeby
+          networkId: 1, // mainnet
           path: "44'/60'/0'/0",
           askConfirm: false,
           confirmations: 2,

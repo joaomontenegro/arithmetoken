@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Token is ERC721URIStorage {
+    event Minted(address indexed addr, uint256 indexed tokenId);
+
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -25,6 +27,8 @@ contract Token is ERC721URIStorage {
         uint256 newTokenId = _tokenIds.current();
         super._mint(addr, newTokenId);
         _setTokenURI(newTokenId, uri);
+
+        emit Minted(addr, newTokenId);
 
         return newTokenId;
     }
