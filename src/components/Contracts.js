@@ -1,6 +1,6 @@
 import Expression from '../abis/Expression.json'
 import Token from '../abis/Token.json'
-import CreateIPFSImage from './IPFSImage'
+import {CreateIPFSNumber, CreateIPFSOperation} from './IPFSImage'
 import Web3 from 'web3'
 
 class Contracts 
@@ -119,7 +119,7 @@ class Contracts
 
     async mintNumberToken(number)
     {
-        const uri = await CreateIPFSImage(number);
+        const uri = await CreateIPFSNumber(number);
         if (!uri) {
           // TODO: take care of this error
           console.log("ERROR: GENERATING IMAGE FOR", number);
@@ -136,7 +136,7 @@ class Contracts
 
     async mintOpToken(op)
     {
-        const uri = await CreateIPFSImage(op);
+        const uri = await CreateIPFSOperation(op);
         if (!uri) {
           // TODO: take care of this error
           console.log("ERROR: GENERATING IMAGE FOR", op);
