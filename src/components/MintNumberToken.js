@@ -1,33 +1,27 @@
 import React, { Component } from 'react'
 
-
 class MintNumberToken extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
           numberToMint : 0
-        }
+        };
 
-        this.onSetNumber = this.onSetNumber.bind(this)
-        this.onSubmit = this.onSubmit.bind(this)
+        this.contracts = props.contracts;
+
+        this.onSetNumber = this.onSetNumber.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
       }
 
     onSetNumber(event) {
-        this.setState({numberToMint : event.target.value})
+        this.setState({numberToMint : event.target.value});
     }
 
-    onSubmit(event) {
-        event.preventDefault()
-
-        const number = this.state.numberToMint
-
-        const uri = "http://" + number + ".json"
-        this.props.tokenContract.methods.mintNumber(this.props.account, uri, number)
-          .send({ from: this.props.account })
-            .on('transactionHash', (hash) => { 
-              console.log("Minted: " + number)
-            })
+    async onSubmit(event) {
+        event.preventDefault();
+        const number = this.state.numberToMint;
+        this.contracts.mintNumberToken(number)
     }
 
     render() {

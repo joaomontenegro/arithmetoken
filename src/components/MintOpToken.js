@@ -6,28 +6,23 @@ class MintOpToken extends Component {
     constructor(props) {
         super(props)
         this.state = {
-          opToMint : 0
+            opToMint : 0
         }
+
+        this.contracts = props.contracts
 
         this.onSetOp = this.onSetOp.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
       }
 
     onSetOp(event) {
-        this.setState({opToMint : event.target.value})
+        this.setState({opToMint : parseInt(event.target.value)})
     }
 
     onSubmit(event) {
         event.preventDefault()
-
         const op = this.state.opToMint
-
-        const uri = "http://" + op + ".json"
-        this.props.tokenContract.methods.mintOperation(this.props.account, uri, op)
-          .send({ from: this.props.account })
-            .on('transactionHash', (hash) => { 
-              console.log("Minted: " + op)
-            })
+        this.contracts.mintOpToken(op)
     }
 
     render() {
