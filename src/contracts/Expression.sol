@@ -87,7 +87,7 @@ function OpStackLen(OpStack memory stack) pure returns (uint256)
     return stack.head;
 }
 
-contract MathContract {
+contract Expression {
     Token private token;
 
     constructor(Token _token) {

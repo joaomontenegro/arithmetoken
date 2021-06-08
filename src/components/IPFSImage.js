@@ -20,7 +20,7 @@ async function CreateIPFSImage(value)
     }        
     ctx.font = '20px Arial';
     ctx.textAlign = "center";
-    ctx.fillText(value, 15, 15);
+    ctx.fillText(value, 15, 20);
     const dataUrl = canvas.toDataURL()
 
     // TODO create json metadata and also add to ipfs

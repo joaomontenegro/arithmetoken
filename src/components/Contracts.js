@@ -1,4 +1,4 @@
-import MathContract from '../abis/MathContract.json'
+import Expression from '../abis/Expression.json'
 import Token from '../abis/Token.json'
 import CreateIPFSImage from './IPFSImage'
 import Web3 from 'web3'
@@ -8,7 +8,7 @@ class Contracts
     constructor() 
     {
         this.tokenContract = {};
-        this.mathContract  = {};
+        this.exprContract  = {};
         this.account       = "0x0";
     }
 
@@ -48,11 +48,11 @@ class Contracts
         }
     
         // Load the Math contract
-        const mathData = MathContract.networks[networkId]
+        const mathData = Expression.networks[networkId]
         if(mathData) {
-            this.mathContract = new web3.eth.Contract(MathContract.abi, mathData.address)
+            this.exprContract = new web3.eth.Contract(Expression.abi, mathData.address)
         } else {
-            window.alert('MathContract contract not deployed to detected network.')
+            window.alert('Expression contract not deployed to detected network.')
         }
 
         // Subscribe to events

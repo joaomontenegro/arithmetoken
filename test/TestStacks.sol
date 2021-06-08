@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
-import "../src/contracts/MathContract.sol";
+import "../src/contracts/Expression.sol";
 
 contract TestStacks {
 

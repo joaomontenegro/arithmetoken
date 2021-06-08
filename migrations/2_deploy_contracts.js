@@ -1,12 +1,12 @@
 const Token = artifacts.require("Token");
-const MathContract = artifacts.require("MathContract");
+const Expression = artifacts.require("Expression");
 
 module.exports = async function (deployer) {
   await deployer.deploy(Token);
   const token = await Token.deployed()
 
-  await deployer.deploy(MathContract, token.address);
-  const mathContract = await MathContract.deployed()
+  await deployer.deploy(Expression, token.address);
+  const expression = await Expression.deployed()
 
   //TODO: set permissions?
 };

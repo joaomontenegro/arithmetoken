@@ -28,10 +28,11 @@ class Expression extends Component {
 
         try {
             //TODO calculate and mint at once
-            const number = await this.contracts.mathContract.methods.calculate(this.state.expression).call();
+            const number = await this.contracts.exprContract.methods.calculate(this.state.expression).call();
             this.contracts.mintNumberToken(number)
 
         } catch (e) {
+            console.log(e);
             console.log("Invalid Expression!");
         }
         

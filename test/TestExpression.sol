@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
-import "../src/contracts/MathContract.sol";
+import "../src/contracts/Expression.sol";
 import "../src/contracts/Token.sol";
 
 contract TestMathContract {
@@ -14,9 +14,9 @@ contract TestMathContract {
         uint256[] memory tokenIds = new uint256[](1);
         tokenIds[0] = tokenId;
 
-        MathContract mathContract = MathContract(DeployedAddresses.MathContract());
+        Expression expression = Expression(DeployedAddresses.Expression());
 
-        Assert.equal(mathContract.calculate(tokenIds), 123, "Expected 123 = 123.");
+        Assert.equal(expression.calculate(tokenIds), 123, "Expected 123 = 123.");
     }
 
     function testCalculateAdd() public {
@@ -31,9 +31,9 @@ contract TestMathContract {
         tokenIds[1] = tokenIdAdd;
         tokenIds[2] = tokenId2;
 
-        MathContract mathContract = MathContract(DeployedAddresses.MathContract());
+        Expression expression = Expression(DeployedAddresses.Expression());
 
-        Assert.equal(mathContract.calculate(tokenIds), 3, "Expected 1 + 2 = 3.");
+        Assert.equal(expression.calculate(tokenIds), 3, "Expected 1 + 2 = 3.");
     }
 
     function testCalculateSub() public {
@@ -48,9 +48,9 @@ contract TestMathContract {
         tokenIds[1] = tokenIdSub;
         tokenIds[2] = tokenId5;
 
-        MathContract mathContract = MathContract(DeployedAddresses.MathContract());
+        Expression expression = Expression(DeployedAddresses.Expression());
 
-        Assert.equal(mathContract.calculate(tokenIds), 2, "Expected 7 - 5 = 2.");
+        Assert.equal(expression.calculate(tokenIds), 2, "Expected 7 - 5 = 2.");
     }
 
     function testCalculateMul() public {
@@ -65,9 +65,9 @@ contract TestMathContract {
         tokenIds[1] = tokenIdMul;
         tokenIds[2] = tokenId4;
 
-        MathContract mathContract = MathContract(DeployedAddresses.MathContract());
+        Expression expression = Expression(DeployedAddresses.Expression());
 
-        Assert.equal(mathContract.calculate(tokenIds), 12, "Expected 3 * 4 = 12.");
+        Assert.equal(expression.calculate(tokenIds), 12, "Expected 3 * 4 = 12.");
     }
 
 
@@ -83,9 +83,9 @@ contract TestMathContract {
         tokenIds[1] = tokenIdDiv;
         tokenIds[2] = tokenId3;
 
-        MathContract mathContract = MathContract(DeployedAddresses.MathContract());
+        Expression expression = Expression(DeployedAddresses.Expression());
 
-        Assert.equal(mathContract.calculate(tokenIds), 2, "Expected 6 / 3 = 2.");
+        Assert.equal(expression.calculate(tokenIds), 2, "Expected 6 / 3 = 2.");
     }
 
     function testCalculatePrecedence() public {
@@ -107,9 +107,9 @@ contract TestMathContract {
         tokenIds[5] = tokenIdAdd;
         tokenIds[6] = tokenId4;
 
-        MathContract mathContract = MathContract(DeployedAddresses.MathContract());
+        Expression expression = Expression(DeployedAddresses.Expression());
 
-        Assert.equal(mathContract.calculate(tokenIds), 11, "Expected 1 + 2 * 3 + 4 = 11.");
+        Assert.equal(expression.calculate(tokenIds), 11, "Expected 1 + 2 * 3 + 4 = 11.");
     }
 
     //TODO: detect errors in code?
@@ -125,10 +125,10 @@ contract TestMathContract {
         tokenIds[1] = tokenIdAdd;
         tokenIds[2] = tokenIdMul;
 
-        MathContract mathContract = MathContract(DeployedAddresses.MathContract());
+        Expression expression = Expression(DeployedAddresses.Expression());
 
-        try mathContract.calculate(tokenIds) returns (int64) {
-            Assert.equal(mathContract.calculate(tokenIds), 11, "Expected exception!");
+        try expression.calculate(tokenIds) returns (int64) {
+            Assert.equal(expression.calculate(tokenIds), 11, "Expected exception!");
         } catch {}        
     }
 
