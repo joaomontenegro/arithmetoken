@@ -16,23 +16,22 @@ class MintOpToken extends Component {
       }
 
     onSetOp(event) {
-        this.setState({opToMint : parseInt(event.target.value)})
+        this.setState({opToMint : event.target.value})
     }
 
     onSubmit(event) {
         event.preventDefault()
-        const op = this.state.opToMint
-        this.contracts.mintOpToken(op)
+        this.contracts.mintOpToken(this.state.opToMint)
     }
 
     render() {
         return (
             <form onSubmit={this.onSubmit}>
                 <select onChange={this.onSetOp} required>
-                  <option key="0" value="0"> &nbsp;+&nbsp; </option>
-                  <option key="1" value="1"> &nbsp;-&nbsp; </option>
-                  <option key="2" value="2"> &nbsp;*&nbsp; </option>
-                  <option key="3" value="3"> &nbsp;/&nbsp; </option>
+                  <option key="0" value="+"> &nbsp;+&nbsp; </option>
+                  <option key="1" value="-"> &nbsp;-&nbsp; </option>
+                  <option key="2" value="*"> &nbsp;*&nbsp; </option>
+                  <option key="3" value="/"> &nbsp;/&nbsp; </option>
                 </select>
                 &nbsp;
                 <button type="submit">&gt; MINT Op Token &lt;</button>

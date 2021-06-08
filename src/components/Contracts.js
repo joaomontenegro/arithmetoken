@@ -99,12 +99,10 @@ class Contracts
     
         if (tokenType === 0) {
             tokenType = "Op"
-            const op = parseInt(await this.tokenContract.methods.getOperation(tokenId).call())
-            value = this.getOpText(op)
-            
+            value = await this.tokenContract.methods.getOperationText(tokenId).call()
         } else {
             tokenType = "Num"
-            value = await this.tokenContract.methods.getNumber(tokenId).call()
+            value = parseInt(await this.tokenContract.methods.getNumber(tokenId).call())
         }
     
         const uri = await this.tokenContract.methods.tokenURI(tokenId).call()
@@ -117,16 +115,6 @@ class Contracts
         }
     
         return token
-    }
-
-    getOpText(op)
-    {
-        if (op === 0) { return "+"; }
-        else if (op === 1) { return "-"; }
-        else if (op === 2) { return "*"; }
-        else if (op === 3) { return "/"; }
-
-        return "";
     }
 
     async mintNumberToken(number)
@@ -148,16 +136,26 @@ class Contracts
 
     async mintOpToken(op)
     {
-        const opText = this.getOpText(op)
-        const uri = await CreateIPFSImage(opText);
+        const uri = await CreateIPFSImage(op);
         if (!uri) {
           // TODO: take care of this error
           console.log("ERROR: GENERATING IMAGE FOR", op);
           return;
         }
 
+        let opId
+        if (op == '+') { opId = 0; }
+        else if (op == '-') { opId = 1; }
+        else if (op == '*') { opId = 2; }
+        else if (op == '/') { opId = 3; }
+        else {
+            // TODO
+            console.log("ERROR: INVALID OP:", op);
+            return;
+        }
+
         // TODO: error check
-        this.tokenContract.methods.mintOperation(this.account, uri, op)
+        this.tokenContract.methods.mintOperation(this.account, uri, opId)
           .send({ from: this.account })
             .on('transactionHash', (hash) => { 
               console.log("Minted: " + op)
