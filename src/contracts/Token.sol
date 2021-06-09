@@ -11,9 +11,8 @@ contract Token is ERC721URIStorage {
     Counters.Counter private _tokenIds;
 
     enum Type {Operation, Number}
-    mapping (uint256 => Type) private _types;
     
-    enum Operation { Add, Sub, Mul, Div }
+    enum Operation {None,  Add, Sub, Mul, Div }
     mapping (uint256 => Operation) private _operations;
     
     mapping (uint256 => int64) private _numbers;
@@ -24,6 +23,7 @@ contract Token is ERC721URIStorage {
     {
         _tokenIds.increment();
 
+
         uint256 newTokenId = _tokenIds.current();
         super._mint(addr, newTokenId);
         _setTokenURI(newTokenId, uri);
@@ -33,6 +33,7 @@ contract Token is ERC721URIStorage {
         return newTokenId;
     }
 
+    // TODO use inverse mapping?
     function getTokensInAddress(address addr) public view returns (uint256[] memory) {
         uint256 balance = balanceOf(addr);
         uint256[] memory tokenIds = new uint256[](balance);
@@ -50,7 +51,11 @@ contract Token is ERC721URIStorage {
 
     function getType(uint256 tokenId) public view returns (Type) {
         require(_exists(tokenId), "Token: getting type of nonexistent token");
-        return _types[tokenId];
+        if (_operations[tokenId] != Operation.None) {
+            return Type.Operation;
+        } else {
+            return Type.Number;
+        }
     }
 
     function getNumber(uint256 tokenId) public view returns (int64) {
@@ -65,6 +70,7 @@ contract Token is ERC721URIStorage {
         return _operations[tokenId];
     }
 
+    // TODO: remove?
     function getOperationText(uint256 tokenId) public view returns (string memory) {
         require(_exists(tokenId), "Token: getting text of nonexistent token");
         require(getType(tokenId) == Type.Operation, "Token: getting text from Number token");
@@ -97,6 +103,7 @@ contract Token is ERC721URIStorage {
         return 0;
     }
 
+    // TODO: Do we need this one?
     function runOperation(uint256 tokenId, int64 v1, int64 v2) public view returns (int64) {
         require(_exists(tokenId), "Token: calculating using a nonexistent token");
         require(getType(tokenId) == Type.Operation, "Token: calculating using a Number token");
@@ -108,7 +115,6 @@ contract Token is ERC721URIStorage {
     function mintNumber(address acct, string memory uri, int64 number) public returns (uint256)
     {
         uint256 newTokenId = _mint(acct, uri);
-        _types[newTokenId] = Type.Number;
         _numbers[newTokenId] = number;
 
         return newTokenId;
@@ -118,7 +124,6 @@ contract Token is ERC721URIStorage {
     function mintOperation(address acct, string memory uri, Operation operation) public returns (uint256)
     {
         uint256 newTokenId = _mint(acct, uri);
-        _types[newTokenId] = Type.Operation;
         _operations[newTokenId] = operation;
 
         return newTokenId;
