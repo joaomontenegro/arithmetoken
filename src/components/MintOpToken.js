@@ -6,7 +6,7 @@ class MintOpToken extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            opToMint : 0
+            opToMint : "+"
         }
 
         this.contracts = props.contracts
@@ -21,6 +21,7 @@ class MintOpToken extends Component {
 
     onSubmit(event) {
         event.preventDefault()
+        console.log("---->", this.state.opToMint)
         this.contracts.mintOpToken(this.state.opToMint)
     }
 

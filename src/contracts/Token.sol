@@ -11,11 +11,18 @@ contract Token is ERC721URIStorage {
     Counters.Counter private _tokenIds;
 
     enum Type {Operation, Number}
-    
     enum Operation {None,  Add, Sub, Mul, Div }
+
     mapping (uint256 => Operation) private _operations;
-    
     mapping (uint256 => int64) private _numbers;
+
+    struct TokenInfo 
+    {
+        uint256 id;
+        Operation operation;
+        int64 number;
+        string uri;
+    }
 
     constructor() ERC721("ArithmeToken", "ARI") {}
 
@@ -33,15 +40,26 @@ contract Token is ERC721URIStorage {
         return newTokenId;
     }
 
-    // TODO use inverse mapping?
-    function getTokensInAddress(address addr) public view returns (uint256[] memory) {
+    function getTokenInfo(uint256 tokenId) public view returns (TokenInfo memory) {
+        require(_exists(tokenId), "Token: getting info of nonexistent token");
+
+        TokenInfo memory info;
+        info.id = tokenId;
+        info.operation = getOperation(tokenId);
+        info.number = getNumber(tokenId);
+        info.uri = tokenURI(tokenId);
+
+        return info;
+    }
+
+    function getTokenInfos(address addr) public view returns (TokenInfo[] memory) {
         uint256 balance = balanceOf(addr);
-        uint256[] memory tokenIds = new uint256[](balance);
+        TokenInfo[] memory tokenIds = new TokenInfo[](balance);
         uint256 found = 0;
         
         for (uint256 i=0; found < balance; i++) {
             if (_exists(i) && ownerOf(i) == addr) {
-                tokenIds[found] = i;
+                tokenIds[found] = getTokenInfo(i);
                 found++;
             }
         }
@@ -51,7 +69,7 @@ contract Token is ERC721URIStorage {
 
     function getType(uint256 tokenId) public view returns (Type) {
         require(_exists(tokenId), "Token: getting type of nonexistent token");
-        if (_operations[tokenId] != Operation.None) {
+        if (getOperation(tokenId) != Operation.None) {
             return Type.Operation;
         } else {
             return Type.Number;
@@ -60,13 +78,11 @@ contract Token is ERC721URIStorage {
 
     function getNumber(uint256 tokenId) public view returns (int64) {
         require(_exists(tokenId), "Token: getting number of nonexistent token");
-        require(getType(tokenId) == Type.Number, "Token: getting number from Operation token");
         return _numbers[tokenId];
     }
 
     function getOperation(uint256 tokenId) public view returns (Operation) {
         require(_exists(tokenId), "Token: getting op of nonexistent token");
-        require(getType(tokenId) == Type.Operation, "Token: getting operation from Number token");
         return _operations[tokenId];
     }
 

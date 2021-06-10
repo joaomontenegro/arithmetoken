@@ -6,7 +6,7 @@ import "truffle/DeployedAddresses.sol";
 import "../src/contracts/Expression.sol";
 import "../src/contracts/Token.sol";
 
-contract TestMathContract {
+contract TestExpression {
 
     function testCalculateNumber() public {
         Token numToken = Token(DeployedAddresses.Token());

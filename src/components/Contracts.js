@@ -36,85 +36,58 @@ class Contracts
         const networkId = await web3.eth.net.getId();
         
         // Get the current account
-        const accounts = await web3.eth.getAccounts()
-        this.account = accounts[0]
+        const accounts = await web3.eth.getAccounts();
+        this.account = accounts[0];
     
         // Load the Token contract
-        const tokenData = Token.networks[networkId]
+        const tokenData = Token.networks[networkId];
         if(tokenData) {
-            this.tokenContract = new web3.eth.Contract(Token.abi, tokenData.address)
+            this.tokenContract = new web3.eth.Contract(Token.abi, tokenData.address);
         } else {
             window.alert('Token contract not deployed to detected network.')
         }
     
         // Load the Math contract
-        const mathData = Expression.networks[networkId]
+        const mathData = Expression.networks[networkId];
         if(mathData) {
-            this.exprContract = new web3.eth.Contract(Expression.abi, mathData.address)
+            this.exprContract = new web3.eth.Contract(Expression.abi, mathData.address);
         } else {
-            window.alert('Expression contract not deployed to detected network.')
+            window.alert('Expression contract not deployed to detected network.');
         }
 
         // Subscribe to events
         this.tokenContract.events.Minted(
             { fromBlock: 'latest', filter: {addr: this.account} }, // show only events for this addr
-            mintedEventHandler)
+            mintedEventHandler);
     }
 
     async getTokenBalance()
     {
-        return await this.tokenContract.methods.balanceOf(this.account).call()
+        return await this.tokenContract.methods.balanceOf(this.account).call();
     }
 
     async getTokens()
     {
-        // todo
-        var t0 = window.performance.now()
+        const tokenInfos = await this.tokenContract.methods.getTokenInfos(this.account).call();
+        const tokens = [];
         
-        // Get the tokens in the account
-        const tokensInAccount = []
-        let tokenIds = await this.tokenContract.methods.getTokensInAddress(this.account).call()
-        
-        // todo
-        var t1 = window.performance.now()
-    
-        for (const tokenId of tokenIds) {
-            const token = await this.getToken(tokenId)
-            tokensInAccount.push(token)
-        }
-    
-        // todo
-        var t2 = window.performance.now()
-        
-        console.log(`TIME getTokensInAddress():  ${t1 - t0} ms`)
-        console.log(`TIME getToken() [several]:  ${t2 - t1} ms`)
-    
-        return tokensInAccount
-    }
+        for (const tokenInfo of tokenInfos) {
+            const op = parseInt(tokenInfo.operation);
+            const type = op > 0 ? "Op" : "Num";
+           
+            let value;
+            if (type === "Num") {
+                value = parseInt(tokenInfo.number);
+            } else {
+                const ops = ['', '+', '-', '*', '/'];
+                value = ops[op];
+            }
 
-    async getToken(tokenId)
-    {
-        let value
-        let tokenType = parseInt(await this.tokenContract.methods.getType(tokenId).call())
-    
-        if (tokenType === 0) {
-            tokenType = "Op"
-            value = await this.tokenContract.methods.getOperationText(tokenId).call()
-        } else {
-            tokenType = "Num"
-            value = parseInt(await this.tokenContract.methods.getNumber(tokenId).call())
+            tokens.push({id:tokenInfo.id, type:type, value:value, uri:tokenInfo.uri});
+            
         }
-    
-        const uri = await this.tokenContract.methods.tokenURI(tokenId).call()
         
-        const token = {
-            id:    tokenId,
-            type:  tokenType,
-            value: value,
-            uri:   uri 
-        }
-    
-        return token
+        return tokens
     }
 
     async mintNumberToken(number)
@@ -144,10 +117,10 @@ class Contracts
         }
 
         let opId
-        if (op == '+') { opId = 0; }
-        else if (op == '-') { opId = 1; }
-        else if (op == '*') { opId = 2; }
-        else if (op == '/') { opId = 3; }
+        if (op === '+') { opId = 1; }
+        else if (op === '-') { opId = 2; }
+        else if (op === '*') { opId = 3; }
+        else if (op === '/') { opId = 4; }
         else {
             // TODO
             console.log("ERROR: INVALID OP:", op);

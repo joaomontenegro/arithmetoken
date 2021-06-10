@@ -2,47 +2,60 @@
 pragma solidity ^0.8.0;
 
 import "truffle/Assert.sol";
-import "truffle/DeployedAddresses.sol";
 import "../src/contracts/Token.sol";
 
 contract TestOperationToken {
 
-  function testInitialBalanceUsingDeployedContract() public {
-    Token opToken = Token(DeployedAddresses.Token());
+    function testMintOperation() public {
+        Token opToken = new Token();
+        uint256 tokenId = opToken.mintOperation(tx.origin, "add.json", Token.Operation.Add);
 
-    Assert.equal(opToken.balanceOf(tx.origin), 0, "Owner should have 0 Token initially");
-  }
+        Assert.equal(opToken.balanceOf(tx.origin), 1, "Owner should have 1 Token after calling mint()");
+        Assert.isTrue(opToken.getOperation(tokenId) == Token.Operation.Add, "Expected operation should be Add.");
+        Assert.equal(opToken.getOperationText(tokenId), "+", "Expected operation text should be '+'.");
+    }
 
-  function testInitialBalanceWithNewOperationToken() public {
-    Token opToken = new Token();
+    function testCalculate() public {
+        Token opToken = new Token();
+        uint256 addId = opToken.mintOperation(tx.origin, "add.json", Token.Operation.Add);
+        uint256 subId = opToken.mintOperation(tx.origin, "sub.json", Token.Operation.Sub);
+        uint256 mulId = opToken.mintOperation(tx.origin, "mul.json", Token.Operation.Mul);
+        uint256 divId = opToken.mintOperation(tx.origin, "dic.json", Token.Operation.Div);
 
-    Assert.equal(opToken.balanceOf(tx.origin), 0, "Owner should have 0 Token initially");
-  }
-  
-  function testMintOperation() public {
-    Token opToken = new Token();
-    uint256 tokenId = opToken.mintOperation(tx.origin, "http://add.json", Token.Operation.Add);
+        int64 a = 15;
+        int64 b = 5;
 
-    Assert.equal(opToken.balanceOf(tx.origin), 1, "Owner should have 1 Token after calling mint()");
-    Assert.isTrue(opToken.getOperation(tokenId) == Token.Operation.Add, "Expected operation should be Add.");
-    Assert.equal(opToken.getOperationText(tokenId), "+", "Expected operation text should be '+'.");
-  }
+        Assert.equal(opToken.runOperation(addId, a, b), 20, "Expected 15 + 5 = 20.");
+        Assert.equal(opToken.runOperation(subId, a, b), 10, "Expected 15 - 5 = 10.");
+        Assert.equal(opToken.runOperation(mulId, a, b), 75, "Expected 15 * 5 = 75.");
+        Assert.equal(opToken.runOperation(divId, a, b), 3,  "Expected 15 / 5 = 3.");
 
-  function testCalculate() public {
-    Token opToken = new Token();
-    uint256 addId = opToken.mintOperation(tx.origin, "http://add.json", Token.Operation.Add);
-    uint256 subId = opToken.mintOperation(tx.origin, "http://sub.json", Token.Operation.Sub);
-    uint256 mulId = opToken.mintOperation(tx.origin, "http://mul.json", Token.Operation.Mul);
-    uint256 divId = opToken.mintOperation(tx.origin, "http://dic.json", Token.Operation.Div);
+    }
 
-    int64 a = 15;
-    int64 b = 5;
+    /* TODO: too big? 
+    function testGetTokenInfos() public {
+        Token opToken = new Token();
+        uint256 addId = opToken.mintOperation(tx.origin, "add.json", Token.Operation.Add);
+        uint256 subId = opToken.mintOperation(tx.origin, "sub.json", Token.Operation.Sub);
 
-    Assert.equal(opToken.runOperation(addId, a, b), 20, "Expected 15 + 5 = 20.");
-    Assert.equal(opToken.runOperation(subId, a, b), 10, "Expected 15 - 5 = 10.");
-    Assert.equal(opToken.runOperation(mulId, a, b), 75, "Expected 15 * 5 = 75.");
-    Assert.equal(opToken.runOperation(divId, a, b), 3,  "Expected 15 / 5 = 3.");
+        Assert.equal(opToken.balanceOf(tx.origin), 2, "Balance of owner should have 2 Tokens.");
 
-  }
+        Token.TokenInfo[] memory tokensInfos = opToken.getTokenInfos(tx.origin);
+        Assert.equal(tokensInfos.length, 2, "Tokens list of owner should have 2 Tokens.");
+
+        Token.TokenInfo memory infoAdd = tokensInfos[0];
+        Assert.equal(infoAdd.id, addId, "Wrong id.");
+        Assert.equal(infoAdd.number, 0, "Wrong number.");
+        Assert.equal(infoAdd.uri, "add.json", "Wrong URI.");
+        Assert.isTrue(infoAdd.operation == Token.Operation.Add, "Wrong operation.");
+
+        Token.TokenInfo memory infoSub = tokensInfos[1];
+        Assert.equal(infoSub.id, subId, "Wrong id.");
+        Assert.equal(infoSub.number, 0, "Wrong number.");
+        Assert.equal(infoSub.uri, "sub.json", "Wrong URI.");
+        Assert.isTrue(infoSub.operation == Token.Operation.Sub, "Wrong operation.");
+
+    }
+    */
 
 }
