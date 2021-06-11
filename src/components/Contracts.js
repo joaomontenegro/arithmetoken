@@ -1,6 +1,6 @@
 import Expression from '../abis/Expression.json'
 import Token from '../abis/Token.json'
-import {CreateIPFSNumber, CreateIPFSOperation} from './IPFSImage'
+import {CreateNumberOnIPFS, CreateOperationOnIPFS, GetImageUriFromJson} from './IPFSImage'
 import Web3 from 'web3'
 
 class Contracts 
@@ -83,7 +83,9 @@ class Contracts
                 value = ops[op];
             }
 
-            tokens.push({id:tokenInfo.id, type:type, value:value, uri:tokenInfo.uri});
+            let imageUri = await GetImageUriFromJson(tokenInfo.uri)
+
+            tokens.push({id:tokenInfo.id, type:type, value:value, uri:tokenInfo.uri, image:imageUri});
             
         }
         
@@ -92,28 +94,28 @@ class Contracts
 
     async mintNumberToken(number)
     {
-        const uri = await CreateIPFSNumber(number);
+        const uri = await CreateNumberOnIPFS(number);
         if (!uri) {
-          // TODO: take care of this error
-          console.log("ERROR: GENERATING IMAGE FOR", number);
-          return;
+            // TODO: take care of this error
+            console.log("ERROR: GENERATING METADATA FOR", number);
+            return;
         }
 
         // TODO: error check
         this.tokenContract.methods.mintNumber(this.account, uri, number)
-          .send({ from: this.account })
-            .on('transactionHash', (hash) => { 
-              console.log("Minted: " + number)
-            });
+            .send({ from: this.account })
+                .on('transactionHash', (hash) => { 
+                    console.log("Minted: " + number)
+                });
     }
 
     async mintOpToken(op)
     {
-        const uri = await CreateIPFSOperation(op);
+        const uri = await CreateOperationOnIPFS(op);
         if (!uri) {
-          // TODO: take care of this error
-          console.log("ERROR: GENERATING IMAGE FOR", op);
-          return;
+            // TODO: take care of this error
+            console.log("ERROR: GENERATING METADATA FOR", op);
+            return;
         }
 
         let opId
@@ -129,12 +131,11 @@ class Contracts
 
         // TODO: error check
         this.tokenContract.methods.mintOperation(this.account, uri, opId)
-          .send({ from: this.account })
-            .on('transactionHash', (hash) => { 
-              console.log("Minted: " + op)
-            })
+            .send({ from: this.account })
+                .on('transactionHash', (hash) => { 
+                    console.log("Minted: " + op)
+                })
     }
-
 
 }
 
