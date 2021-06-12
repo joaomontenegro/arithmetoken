@@ -10,7 +10,7 @@ async function _UploadToIPFS(buffer) {
         const { create } = require('ipfs-http-client');
         const ipfs = create('https://ipfs.infura.io:5001');
         const { cid } = await ipfs.add(buffer);
-        return `https://ipfs.infura.io/ipfs/${cid}`;
+        return `https://ipfs.io/ipfs/${cid}`;
     } catch(error) {
         console.log("IPFS ERROR:", error) // todo better error handling
     }

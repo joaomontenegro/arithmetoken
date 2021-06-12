@@ -27,7 +27,7 @@
 const dotenv = require('dotenv').config()
 const regeneratorRuntime = require("regenerator-runtime");
 
-var HDWalletProvider = require("@truffle/hdwallet-provider");
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 var LedgerWalletProvider = require('truffle-ledger-provider');
 
 
