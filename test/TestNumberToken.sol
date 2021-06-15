@@ -14,6 +14,7 @@ contract TestNumberToken {
         Assert.equal(numToken.getNumber(tokenId), number, "Expected number should be 123.");
     }
 
+
     function testGetTokenInfos() public {
         Token numToken = new Token();
         numToken.mintNumber(tx.origin, "11.json", 11);
@@ -30,4 +31,33 @@ contract TestNumberToken {
         Assert.equal(info11.uri, "11.json", "Wrong URI.");
         Assert.isTrue(info11.operation == Token.Operation.None, "Wrong operation.");
     }
+
+    /*
+    function testMintTwiceError() public {
+        Token numToken = new Token();
+        numToken.mintNumber(tx.origin, "1.json", 1);
+        numToken.mintNumber(tx.origin, "2.json", 2);
+
+        try numToken.mintNumber(tx.origin, "1.json", 1) returns (uint256) {
+            Assert.fail("An exception was expected when minting 1 twice.");
+        } catch {
+        }
+    }
+
+    function testMintInitial() public {
+        Token numToken = new Token();
+
+        int64 num = 0;
+        for (uint8 i = 0; i < numToken._initialMax(); ++i) {
+            numToken.mintNumber(tx.origin, "a.json", num);
+            num++;
+        }
+        
+        try numToken.mintNumber(tx.origin, "b.json", num) returns (uint256) {
+            Assert.fail("More than the max initial tokens were minted.");
+        } catch {
+        }
+    }
+
+    */
 }

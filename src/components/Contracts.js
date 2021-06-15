@@ -137,6 +137,25 @@ class Contracts
                 })
     }
 
+    async mintWithExpression(expression)
+    {
+        const number = await this.exprContract.methods.calculate(expression).call();
+
+        const uri = await CreateNumberOnIPFS(number);
+        if (!uri) {
+            // TODO: take care of this error
+            console.log("ERROR: GENERATING METADATA FOR", number);
+            return;
+        }
+
+        // TODO: error check
+        this.exprContract.methods.mint(this.account, uri, expression)
+            .send({ from: this.account })
+                .on('transactionHash', (hash) => { 
+                    console.log("Minted: " + number)
+                });
+    }
+
 }
 
 export default Contracts;

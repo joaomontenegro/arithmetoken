@@ -16,6 +16,14 @@ contract Token is ERC721URIStorage {
     mapping (uint256 => Operation) private _operations;
     mapping (uint256 => int64) private _numbers;
 
+    mapping (int64 => bool) private _mintedNumbers;
+
+    address _minter = address(0);
+    bool _minterSet = false;
+    
+    uint8 _initialMinted = 0;
+    uint8 public constant _initialMax = 10;    
+
     struct TokenInfo 
     {
         uint256 id;
@@ -30,7 +38,6 @@ contract Token is ERC721URIStorage {
     {
         _tokenIds.increment();
 
-
         uint256 newTokenId = _tokenIds.current();
         super._mint(addr, newTokenId);
         _setTokenURI(newTokenId, uri);
@@ -38,6 +45,22 @@ contract Token is ERC721URIStorage {
         emit Minted(addr, newTokenId);
 
         return newTokenId;
+    }
+
+    function _isNumberMinted(int64 number) private view returns (bool) {
+        return _mintedNumbers[number];
+    }
+
+    function _setNumberMinted(int64 number) private {
+        _mintedNumbers[number] = true;
+    }
+
+    function setMinter(address minter) public returns (address) {
+        require(!_minterSet, "setMinter() can only be called once.");
+        _minter = minter;
+        _minterSet= true;
+
+        return _minter;
     }
 
     function getTokenInfo(uint256 tokenId) public view returns (TokenInfo memory) {
@@ -119,24 +142,24 @@ contract Token is ERC721URIStorage {
         return 0;
     }
 
-    // TODO: Do we need this one?
-    function runOperation(uint256 tokenId, int64 v1, int64 v2) public view returns (int64) {
-        require(_exists(tokenId), "Token: calculating using a nonexistent token");
-        require(getType(tokenId) == Type.Operation, "Token: calculating using a Number token");
-
-        return runOperation(getOperation(tokenId), v1, v2);
-    }
-
-    // TODO Permissions?
+    //todo test minter
     function mintNumber(address acct, string memory uri, int64 number) public returns (uint256)
     {
+        require(!_isNumberMinted(number), "The token for that number was already minted.");
+
+        // After the initial tokens are minted, only the minter address will be able to mint more.
+        if (_initialMinted >= _initialMax) {
+            require(_msgSender() == _minter, "Only the minter address can mint new Tokens.");
+        }
+        _initialMinted++;
+
         uint256 newTokenId = _mint(acct, uri);
         _numbers[newTokenId] = number;
+        _setNumberMinted(number);
 
         return newTokenId;
     }
 
-    // TODO Permissions?
     function mintOperation(address acct, string memory uri, Operation operation) public returns (uint256)
     {
         uint256 newTokenId = _mint(acct, uri);

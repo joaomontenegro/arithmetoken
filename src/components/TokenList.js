@@ -11,6 +11,7 @@ class TokenList extends Component {
                     <td>{token.id}</td>
                     <td>{token.type}</td>
                     <td>{token.value}</td>
+                    <td><a href={token.uri}>{token.uri}</a></td>
                     <td><img src={token.image} alt={token.value}/></td>
                 </tr>)
         }
@@ -25,6 +26,7 @@ class TokenList extends Component {
                             <th scope="col">Type</th>
                             <th scope="col">Value</th>
                             <th scope="col">URI</th>
+                            <th scope="col">Image</th>
                         </tr>
 
                         {tokenRows}

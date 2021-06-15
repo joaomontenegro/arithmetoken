@@ -129,7 +129,7 @@ contract TestExpression {
 
         try expression.calculate(tokenIds) returns (int64) {
             Assert.equal(expression.calculate(tokenIds), 11, "Expected exception!");
-        } catch {}        
+        } catch {}
     }
 
 }

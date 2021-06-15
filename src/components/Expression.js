@@ -27,9 +27,7 @@ class Expression extends Component {
         event.preventDefault();
 
         try {
-            //TODO calculate and mint at once
-            const number = await this.contracts.exprContract.methods.calculate(this.state.expression).call();
-            this.contracts.mintNumberToken(number)
+            this.contracts.mintWithExpression(this.state.expression);
 
         } catch (e) {
             console.log(e);

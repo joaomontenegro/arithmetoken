@@ -40,7 +40,7 @@ function _CreateNumberJSON(number, imageUri)
                 value: number % 2 === 1? "Odd" : "Even"
             },
             {
-                trait_type: "Odd or Prime", 
+                trait_type: "Prime", 
                 value: _IsPrime(number)
             }
         ]

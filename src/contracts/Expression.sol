@@ -88,31 +88,40 @@ function OpStackLen(OpStack memory stack) pure returns (uint256)
 }
 
 contract Expression {
-    Token private token;
+    Token private _token;
 
-    constructor(Token _token) {
-        token = _token;
+    constructor(Token token) {
+        _token = token;
     }
 
-    // TODO: mint with the result of calculate
+    function _runTopOp(NumStack memory numStack, OpStack memory opStack) internal view
+    {
+        Token.Operation op = OpStackPop(opStack);
 
-    function calculate(uint256[] memory tokens) public view returns (int64)
+        int64 v2 = NumStackPop(numStack);
+        int64 v1 = NumStackPop(numStack);
+
+        int64 v = _token.runOperation(op, v1, v2);
+        NumStackPush(numStack, v);
+    }
+
+    function calculate(uint256[] memory _tokens) public view returns (int64)
     {
         NumStack memory numStack;
         OpStack memory opStack;
 
         //TODO: Better sizes?
-        NumStackInit(numStack, tokens.length);
-        OpStackInit(opStack, tokens.length);
+        NumStackInit(numStack, _tokens.length);
+        OpStackInit(opStack, _tokens.length);
 
-        for (uint i=0; i < tokens.length; i++) {
-            uint256 tokenId = tokens[i];
+        for (uint i=0; i < _tokens.length; i++) {
+            uint256 tokenId = _tokens[i];
 
-            if (token.getType(tokenId) == Token.Type.Number) {
+            if (_token.getType(tokenId) == Token.Type.Number) {
                 // Add to the operand stack
-                NumStackPush(numStack, token.getNumber(tokenId));
+                NumStackPush(numStack, _token.getNumber(tokenId));
             } else {
-                Token.Operation op = token.getOperation(tokenId);
+                Token.Operation op = _token.getOperation(tokenId);
 
                 if (OpStackLen(opStack) >  0) {
                     Token.Operation topOp = OpStackHead(opStack);
@@ -135,14 +144,10 @@ contract Expression {
         return NumStackTail(numStack);
     }
 
-    function _runTopOp(NumStack memory numStack, OpStack memory opStack) internal view
-    {
-        Token.Operation op = OpStackPop(opStack);
-
-        int64 v2 = NumStackPop(numStack);
-        int64 v1 = NumStackPop(numStack);
-
-        int64 v = token.runOperation(op, v1, v2);
-        NumStackPush(numStack, v);
+    //TODO: test
+    function mint(address account, string memory uri, uint256[] memory tokens) public returns(uint256) {
+        int64 num = calculate(tokens);
+        return _token.mintNumber(account, uri, num);
     }
+
 }
