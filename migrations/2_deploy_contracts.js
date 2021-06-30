@@ -9,6 +9,4 @@ module.exports = async function (deployer) {
   const expression = await Expression.deployed()
 
   await token.setMinter(expression.address);
-  
-  //TODO: set permissions?
 };

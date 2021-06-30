@@ -17,18 +17,14 @@ contract TestOperationToken {
 
     function testCalculate() public {
         Token opToken = new Token();
-        uint256 addId = opToken.mintOperation(tx.origin, "add.json", Token.Operation.Add);
-        uint256 subId = opToken.mintOperation(tx.origin, "sub.json", Token.Operation.Sub);
-        uint256 mulId = opToken.mintOperation(tx.origin, "mul.json", Token.Operation.Mul);
-        uint256 divId = opToken.mintOperation(tx.origin, "dic.json", Token.Operation.Div);
 
         int64 a = 15;
         int64 b = 5;
 
-        Assert.equal(opToken.runOperation(addId, a, b), 20, "Expected 15 + 5 = 20.");
-        Assert.equal(opToken.runOperation(subId, a, b), 10, "Expected 15 - 5 = 10.");
-        Assert.equal(opToken.runOperation(mulId, a, b), 75, "Expected 15 * 5 = 75.");
-        Assert.equal(opToken.runOperation(divId, a, b), 3,  "Expected 15 / 5 = 3.");
+        Assert.equal(opToken.runOperation(Token.Operation.Add, a, b), 20, "Expected 15 + 5 = 20.");
+        Assert.equal(opToken.runOperation(Token.Operation.Sub, a, b), 10, "Expected 15 - 5 = 10.");
+        Assert.equal(opToken.runOperation(Token.Operation.Mul, a, b), 75, "Expected 15 * 5 = 75.");
+        Assert.equal(opToken.runOperation(Token.Operation.Div, a, b), 3,  "Expected 15 / 5 = 3.");
 
     }
 
