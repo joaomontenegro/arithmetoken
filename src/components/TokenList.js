@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
+import AbstractTokenList from './AbstractTokenList';
 
-
-class TokenList extends Component {
+class TokenList extends AbstractTokenList {
     render() {
-        const tokenRows = []
-        for (var i = 0; i < this.props.tokensInAccount.length; i++) {
-            const token = this.props.tokensInAccount[i]
+        const tokens = this.getTokens();
+        const tokenRows = [];
+        for (var i = 0; i < tokens.length; i++) {
+            const token = tokens[i];
             tokenRows.push(
                 <tr key={i}>
                     <td>{token.id}</td>
@@ -13,13 +13,13 @@ class TokenList extends Component {
                     <td>{token.value}</td>
                     <td><a href={token.uri}>{token.uri}</a></td>
                     <td><img src={token.image} alt={token.value}/></td>
-                </tr>)
+                </tr>);
         }
 
         return (
-            <div id="TokenList">
-                <p><b>Tokens of</b> {this.props.account}:</p>
-                <table align="center" border="1">
+            <div id="TokenList" className="App-list">
+                <h1>My Tokens</h1>
+                <table border="1" className="App-table">
                     <thead>
                         <tr>
                             <th scope="col">Id</th>
@@ -36,8 +36,7 @@ class TokenList extends Component {
             </div>
         );
     }
-
-   
+  
 }
 
 export default TokenList;

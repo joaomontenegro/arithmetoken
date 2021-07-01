@@ -26,7 +26,7 @@ class Contracts
         }
     }
 
-    async load(mintedEventHandler) {
+    async load() {
         const web3 = window.web3;
         if (!web3) {
             //todo
@@ -54,12 +54,14 @@ class Contracts
         } else {
             window.alert('Expression contract not deployed to detected network.');
         }
-
-        // Subscribe to events
-        this.tokenContract.events.Minted(
-            { fromBlock: 'latest', filter: {addr: this.account} }, // show only events for this addr
-            mintedEventHandler);
     }
+
+    registerMintedEventHandler(mintedEventHandler) {
+         // Subscribe to events
+         this.tokenContract.events.Minted(
+            { fromBlock: 'latest', filter: {addr: this.account} },
+            mintedEventHandler);
+    }   
 
     async getTokenBalance()
     {

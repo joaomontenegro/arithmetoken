@@ -1,15 +1,13 @@
-import React, { Component } from 'react'
+import AbstractTokenList from './AbstractTokenList';
+import './App.css';
 
-
-class Expression extends Component {
+class Expression extends AbstractTokenList {
 
     constructor(props) {
         super(props);
-        this.state = {
-            expression : []
-        };
 
-        this.contracts = props.contracts;
+        // Extend the parent's state
+        this.state.expression = []
 
         this.onSelectToken = this.onSelectToken.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -19,8 +17,6 @@ class Expression extends Component {
         let newExpression = this.state.expression;
         newExpression[event.target.id] = event.target.value;
         this.setState({expression : newExpression});
-
-        console.log(this.state.expression);
     }
 
     async onSubmit(event) {
@@ -33,14 +29,15 @@ class Expression extends Component {
             console.log(e);
             console.log("Invalid Expression!");
         }
-        
     }
 
     render() {
+        const tokens = this.getTokens();
+
         // Create the dropdown token options
         const options = [ <option key={-1} value=""></option> ];
-        for (var i = 0; i < this.props.tokensInAccount.length; i++) {
-            const token = this.props.tokensInAccount[i];
+        for (var i = 0; i < tokens.length; i++) {
+            const token = tokens[i];
             options.push(
                 <option key={i} value={token.id}>{token.value}</option>
             );
@@ -57,12 +54,14 @@ class Expression extends Component {
         }
 
         return (
-            <form onSubmit={this.onSubmit}>
-                <b>Minting Expression:</b>&nbsp;
-                {dropDowns}
-                &nbsp;
-                <button type="submit">Mint</button>
-            </form>
+            <div className="App-form">
+                <form onSubmit={this.onSubmit}>
+                    <b>Minting Expression:</b>&nbsp;
+                    {dropDowns}
+                    &nbsp;
+                    <button type="submit">Mint</button>
+                </form>
+            </div>
         );
     }
 

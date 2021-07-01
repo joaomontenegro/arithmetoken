@@ -26,7 +26,7 @@ class MintNumberToken extends Component {
 
     render() {
         return (
-            <form onSubmit={this.onSubmit}>
+            <form className="App-form" onSubmit={this.onSubmit}>
                 <input type="text" size="4" value={this.state.numberToMint}  onChange={this.onSetNumber} placeholder="0" required/>
                 &nbsp;
                 <button type="submit">&gt; MINT Number Token &lt;</button>

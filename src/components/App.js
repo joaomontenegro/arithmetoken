@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
+import AppHeader from './AppHeader'
 import Contracts from './Contracts'
-import TokenList from './TokenList';
+import ExpressionForm from './ExpressionForm';
 import MintNumberToken from './MintNumberToken';
 import MintOpToken from './MintOpToken';
-import Expression from './Expression';
+import TokenList from './TokenList';
+
 import './App.css';
 
 class App extends Component {
@@ -12,61 +14,51 @@ class App extends Component {
         super(props);
         this.state = {
           loading: false,
-          tokenBalance : 0,
-          tokensInAccount : [],
+          isConnected: false
         };
-        
+
+        this.onConnectWallet = this.onConnectWallet.bind(this);
         this.contracts = new Contracts();
-        
-        this.mintedEventHandler = this.mintedEventHandler.bind(this);
     }
 
-    async componentDidMount() {
+    async onConnectWallet(event) {
+        event.preventDefault();
+
         // Load Web3 and the smart contracts
         await this.contracts.initWeb3();
-        await this.contracts.load(this.mintedEventHandler);
+        await this.contracts.load();
         
-        // Update the list of tokens in the account
-        this.setState({ tokensInAccount: await this.contracts.getTokens() });
+        this.setState({ isConnected: true });
     }
   
     render() {
-      return (
-        <div className="App">
-            <header className="App-header">
-              ArithmeToken
-            </header>
-
-            <TokenList
-                account={this.contracts.account}
-                tokensInAccount={this.state.tokensInAccount}
-            />
-
-            <hr></hr>
-            <Expression 
-                contracts={this.contracts}
-                tokensInAccount={this.state.tokensInAccount}
-            />
-
-            <hr></hr>
-            <b> Cheating </b>
-            <MintOpToken
-                contracts={this.contracts}
-            />
-
-            <br></br>
-            <MintNumberToken
-                contracts={this.contracts}
-            />
-        </div>
-      );
-    }
-
-    async mintedEventHandler (error, event) {
-        if (error) {
-            window.alert("error while subscribing to event");
+        if (this.state.isConnected) {
+            return (
+                <div>
+                    <AppHeader/>
+                    <TokenList contracts={this.contracts}/>
+                    <hr/>
+                    <ExpressionForm contracts={this.contracts}/>
+                    <hr></hr>
+                    <MintOpToken contracts={this.contracts}/>
+                    <br/>
+                    <MintNumberToken contracts={this.contracts}/>
+                </div>
+            );
         } else {
-            await this.setState({ tokensInAccount: await this.contracts.getTokens() });
+            return (
+                <div className="App">
+                    <AppHeader/>
+                    <br/>
+                    <p className="App-big-text">Own the Integers!</p>
+                    <br/>
+                    <form onSubmit={this.onConnectWallet}>
+                        <button className="App-button">
+                            Connect Wallet
+                        </button>
+                    </form>
+                </div>
+            );
         }
     }
 

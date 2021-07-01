@@ -27,7 +27,7 @@ class MintOpToken extends Component {
 
     render() {
         return (
-            <form onSubmit={this.onSubmit}>
+            <form className="App-form" onSubmit={this.onSubmit}>
                 <select onChange={this.onSetOp} required>
                   <option key="0" value="+"> &nbsp;+&nbsp; </option>
                   <option key="1" value="-"> &nbsp;-&nbsp; </option>
