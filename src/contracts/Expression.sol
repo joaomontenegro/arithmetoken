@@ -146,16 +146,14 @@ contract Expression {
 
     //todo add test
     function mint(string memory uri, uint256[] memory tokens) public returns(uint256) {
-        address account = msg.sender;
-
         // Make sure all tokens belong to the account
         for (uint i=0; i < tokens.length; i++) {
-            require(_token.ownerOf(tokens[i]) == account,
+            require(_token.ownerOf(tokens[i]) == msg.sender,
                     "All tokens in expression have to belong to the caller address.");
         }
 
         int64 num = calculate(tokens);
-        return _token.mintNumber(account, uri, num);
+        return _token.mintNumber(msg.sender, uri, num);
     }
 
 }
