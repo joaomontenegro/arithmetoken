@@ -33,8 +33,6 @@ contract TestExpressionCalculations {
     }
 
     function testCalculateNumber() public {
-        Token numToken = Token(DeployedAddresses.Token());
-
         uint256[] memory tokenIds = new uint256[](1);
         tokenIds[0] = tokenId1;
 

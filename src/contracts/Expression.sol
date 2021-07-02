@@ -105,17 +105,17 @@ contract Expression {
         NumStackPush(numStack, v);
     }
 
-    function calculate(uint256[] memory _tokens) public view returns (int64)
+    function calculate(uint256[] memory tokens) public view returns (int64)
     {
         NumStack memory numStack;
         OpStack memory opStack;
 
         //TODO: Better sizes?
-        NumStackInit(numStack, _tokens.length);
-        OpStackInit(opStack, _tokens.length);
+        NumStackInit(numStack, tokens.length);
+        OpStackInit(opStack, tokens.length);
 
-        for (uint i=0; i < _tokens.length; i++) {
-            uint256 tokenId = _tokens[i];
+        for (uint i=0; i < tokens.length; i++) {
+            uint256 tokenId = tokens[i];
 
             if (_token.getType(tokenId) == Token.Type.Number) {
                 // Add to the operand stack
@@ -144,8 +144,16 @@ contract Expression {
         return NumStackTail(numStack);
     }
 
-    //TODO: test
-    function mint(address account, string memory uri, uint256[] memory tokens) public returns(uint256) {
+    //todo add test
+    function mint(string memory uri, uint256[] memory tokens) public returns(uint256) {
+        address account = msg.sender;
+
+        // Make sure all tokens belong to the account
+        for (uint i=0; i < tokens.length; i++) {
+            require(_token.ownerOf(tokens[i]) == account,
+                    "All tokens in expression have to belong to the caller address.");
+        }
+
         int64 num = calculate(tokens);
         return _token.mintNumber(account, uri, num);
     }

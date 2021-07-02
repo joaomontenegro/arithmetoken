@@ -24,7 +24,8 @@ class Expression extends AbstractTokenList {
 
         try {
             this.contracts.mintWithExpression(this.state.expression);
-
+            this.setState({expression : []});
+            
         } catch (e) {
             console.log(e);
             console.log("Invalid Expression!");

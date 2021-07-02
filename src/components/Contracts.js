@@ -151,7 +151,7 @@ class Contracts
         }
 
         // TODO: error check
-        this.exprContract.methods.mint(this.account, uri, expression)
+        this.exprContract.methods.mint(uri, expression)
             .send({ from: this.account })
                 .on('transactionHash', (hash) => { 
                     console.log("Minted: " + number)

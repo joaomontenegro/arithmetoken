@@ -8,7 +8,7 @@ contract Token is ERC721URIStorage {
     event Minted(address indexed addr, uint256 indexed tokenId);
 
     using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+    Counters.Counter private _info;
 
     enum Type {Operation, Number}
     enum Operation {None,  Add, Sub, Mul, Div }
@@ -36,9 +36,9 @@ contract Token is ERC721URIStorage {
 
     function _mint(address addr, string memory uri) internal returns (uint256)
     {
-        _tokenIds.increment();
+        _info.increment();
 
-        uint256 newTokenId = _tokenIds.current();
+        uint256 newTokenId = _info.current();
         super._mint(addr, newTokenId);
         _setTokenURI(newTokenId, uri);
 
@@ -77,17 +77,17 @@ contract Token is ERC721URIStorage {
 
     function getTokenInfos(address addr) public view returns (TokenInfo[] memory) {
         uint256 balance = balanceOf(addr);
-        TokenInfo[] memory tokenIds = new TokenInfo[](balance);
+        TokenInfo[] memory info = new TokenInfo[](balance);
         uint256 found = 0;
         
         for (uint256 i=0; found < balance; i++) {
             if (_exists(i) && ownerOf(i) == addr) {
-                tokenIds[found] = getTokenInfo(i);
+                info[found] = getTokenInfo(i);
                 found++;
             }
         }
 
-        return tokenIds;
+        return info;
     }
 
     function getType(uint256 tokenId) public view returns (Type) {
@@ -142,7 +142,6 @@ contract Token is ERC721URIStorage {
         return 0;
     }
 
-    //todo test minter
     function mintNumber(address acct, string memory uri, int64 number) public returns (uint256)
     {
         require(!_isNumberMinted(number), "The token for that number was already minted.");
