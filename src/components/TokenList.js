@@ -1,4 +1,5 @@
 import AbstractTokenList from './AbstractTokenList';
+import TokenInfo from './TokenInfo';
 
 class TokenList extends AbstractTokenList {
     render() {
@@ -8,30 +9,20 @@ class TokenList extends AbstractTokenList {
             const token = tokens[i];
             tokenRows.push(
                 <tr key={i}>
-                    <td>{token.id}</td>
-                    <td>{token.type}</td>
-                    <td>{token.value}</td>
-                    <td><a href={token.uri}>{token.uri}</a></td>
-                    <td><img src={token.image} alt={token.value}/></td>
-                </tr>);
+                    <td>
+                        <TokenInfo token={token}/>
+                    </td>
+                </tr>
+            );
         }
 
         return (
             <div id="TokenList" className="App-list">
                 <h1>My Tokens</h1>
                 <table border="1" className="App-table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Id</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Value</th>
-                            <th scope="col">URI</th>
-                            <th scope="col">Image</th>
-                        </tr>
-
+                    <tbody>
                         {tokenRows}
-
-                    </thead>
+                    </tbody>
                 </table>
             </div>
         );
