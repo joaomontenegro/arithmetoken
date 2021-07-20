@@ -19,10 +19,8 @@ contract Token is ERC721URIStorage {
     mapping (int64 => bool) private _mintedNumbers;
 
     address _minter = address(0);
-    bool _minterSet = false;
-    
-    uint8 _initialMinted = 0;
-    uint8 public constant _initialMax = 10;    
+
+    bool _initialWereMinted = false;
 
     struct TokenInfo 
     {
@@ -47,18 +45,30 @@ contract Token is ERC721URIStorage {
         return newTokenId;
     }
 
-    function _isNumberMinted(int64 number) private view returns (bool) {
+    function _isMinterSet() internal view returns (bool)
+    {
+        return _minter != address(0);
+    }
+
+    function _mintNumber(address acct, string memory uri, int64 number) private returns (uint256)
+    {
+        require(!isNumberMinted(number), "The token for that number was already minted.");
+
+        uint256 newTokenId = _mint(acct, uri);
+        _numbers[newTokenId] = number;
+        _mintedNumbers[number] = true;
+
+        return newTokenId;
+    }
+
+    function isNumberMinted(int64 number) public view returns (bool) {
         return _mintedNumbers[number];
     }
 
-    function _setNumberMinted(int64 number) private {
-        _mintedNumbers[number] = true;
-    }
-
+    // TODO add test
     function setMinter(address minter) public returns (address) {
-        require(!_minterSet, "setMinter() can only be called once.");
+        require(!_isMinterSet(), "setMinter() can only be called once.");
         _minter = minter;
-        _minterSet= true;
 
         return _minter;
     }
@@ -80,6 +90,7 @@ contract Token is ERC721URIStorage {
         TokenInfo[] memory info = new TokenInfo[](balance);
         uint256 found = 0;
         
+        // TODO: use ownership map?
         for (uint256 i=0; found < balance; i++) {
             if (_exists(i) && ownerOf(i) == addr) {
                 info[found] = getTokenInfo(i);
@@ -144,19 +155,27 @@ contract Token is ERC721URIStorage {
 
     function mintNumber(address acct, string memory uri, int64 number) public returns (uint256)
     {
-        require(!_isNumberMinted(number), "The token for that number was already minted.");
+        // Only the minter address will be able to mint number tokens.
+        require(_msgSender() == _minter,
+            "Only the minter address can mint new Tokens.");
 
-        // After the initial tokens are minted, only the minter address will be able to mint more.
-        if (_initialMinted >= _initialMax) {
-            require(_msgSender() == _minter, "Only the minter address can mint new Tokens.");
+        return _mintNumber(acct, uri, number);
+    }
+
+    function mintInitialNumbers(
+        address acct,
+        int64[] memory numbers,
+        string[] memory uris
+    ) public{
+        require(!_initialWereMinted , "Already minted the initial number tokens.");
+
+        require(numbers.length == uris.length, "Length of uris doesn't match the length of initial numbers.");
+        
+        for (uint256 i = 0; i < numbers.length; i++) {
+            _mintNumber(acct, uris[i], numbers[i]);
         }
-        _initialMinted++;
 
-        uint256 newTokenId = _mint(acct, uri);
-        _numbers[newTokenId] = number;
-        _setNumberMinted(number);
-
-        return newTokenId;
+        _initialWereMinted = true;
     }
 
     function mintOperation(address acct, string memory uri, Operation operation) public returns (uint256)
